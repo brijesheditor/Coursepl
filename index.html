@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uttar Pradesh B.Sc Nursing 1.0 Course Player</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <div class="sidebar">
+      <h2>B.Sc Nursing Batch[span_0](start_span)[span_0](end_span)</h2>
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="switchTab('drm')">Live Player</button>
+        <button class="tab-btn" onclick="switchTab('pdfs')">PDF Notes</button>
+      </div>
+
+      <div id="drm" class="tab-content active">
+        <div class="input-card">
+          <label>MPD Stream URL:</label>
+          <input type="text" id="mpdUrl" placeholder="MPD Link yahan dalein">
+          
+          <label>DRM Key (KID:KEY):</label>
+          <input type="text" id="keyPair" placeholder="6573a98cdf4d65bbe27d382338138c4f:7fc0cf29fc7ca6feb153c79c07222eae">
+          
+          <button onclick="playDRMStream()">Stream Play Karein</button>
+        </div>
+      </div>
+
+      <div id="pdfs" class="tab-content">
+        <ul class="pdf-list">
+          <li><a href="https://cdn-wl-assets.classplus.co/production/352407/8fa0f300-ce39-4285-a3e7-ab391f06ac72.pdf" target="_blank">Chemistry Important Topics PDF[span_1](start_span)[span_1](end_span)</a></li>
+          <li><a href="https://cdn-wl-assets.classplus.co/production/352407/587ba46a-e961-458e-81af-4cefec5c60a8.pdf" target="_blank">Elements 1–30 Atomic Mass PDF[span_2](start_span)[span_2](end_span)</a></li>
+          <li><a href="https://cdn-wl-assets.classplus.co/production/352407/c959310d-8fa7-46a6-b244-821b0516ef1c.pdf" target="_blank">Pollution & Environment PDF[span_3](start_span)[span_3](end_span)</a></li>
+          <li><a href="https://cdn-wl-assets.classplus.co/production/352407/b4714db9-82fe-4ed0-a7e6-7c3259ab0369.pdf" target="_blank">Important Chemical Formula PDF[span_4](start_span)[span_4](end_span)</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="main-player">
+      <div class="player-container">
+        <video id="video" controls autoplay></video>
+      </div>
+      <h3 id="videoTitle">Select or Paste Stream to Play</h3>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
