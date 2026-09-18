@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Classes & PDF Portal</title>
+    <title>Course Content Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- HLS.js for .m3u8 Video Playback -->
+    <!-- HLS.js -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -17,48 +17,75 @@
     <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-40 shadow-lg">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <i data-lucide="book-open-check" class="w-8 h-8 text-indigo-400"></i>
-                <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                    Course Content Portal
-                </h1>
+                <i data-lucide="folder-git2" class="w-8 h-8 text-indigo-400"></i>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                        Course Content Portal
+                    </h1>
+                    <p class="text-xs text-slate-400">Multi-File Manager & Video Player</p>
+                </div>
             </div>
 
             <!-- Upload Box -->
             <div class="flex items-center gap-3 w-full md:w-auto">
                 <label class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg cursor-pointer transition shadow">
-                    <i data-lucide="upload" class="w-4 h-4"></i>
-                    <span class="text-sm font-semibold">Upload TXT File</span>
-                    <input type="file" id="fileInput" accept=".txt" class="hidden">
+                    <i data-lucide="file-plus" class="w-4 h-4"></i>
+                    <span class="text-sm font-semibold">Upload TXT File(s)</span>
+                    <input type="file" id="fileInput" accept=".txt" multiple class="hidden">
                 </label>
-                <button id="resetBtn" class="hidden bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-lg text-sm transition">
-                    Reset
-                </button>
             </div>
         </div>
     </header>
 
     <!-- Main Content Area -->
-    <main class="max-w-7xl mx-auto p-4 md:p-6 flex-grow w-full">
+    <main class="max-w-7xl mx-auto p-4 md:p-6 flex-grow w-full space-y-6">
         
-        <!-- Welcome / Instructions State -->
+        <!-- Welcome State -->
         <div id="welcomeBox" class="text-center py-16 bg-slate-800/50 rounded-2xl border border-dashed border-slate-700 my-8">
-            <i data-lucide="file-text" class="w-16 h-16 text-indigo-400 mx-auto mb-4 opacity-80"></i>
-            <h2 class="text-2xl font-bold mb-2 text-slate-200">Apni Course TXT File Upload Karein</h2>
+            <i data-lucide="folder-open" class="w-16 h-16 text-indigo-400 mx-auto mb-4 opacity-80"></i>
+            <h2 class="text-2xl font-bold mb-2 text-slate-200">Apni Course TXT Files Upload Karein</h2>
             <p class="text-slate-400 max-w-md mx-auto mb-6 text-sm">
-                Apni `.txt` file select karein. Yeh app automatic saare subjects, PDF notes aur video classes ko categorize karke dikha dega.
+                Aap ek saath multiple `.txt` files upload kar sakte hain. Har file alag folder me save ho jayegi.
             </p>
         </div>
 
-        <!-- Dashboard UI (Hidden initially) -->
+        <!-- Files Manager Folder Section -->
+        <div id="filesFolderSection" class="hidden bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="folder" class="w-5 h-5 text-amber-400"></i>
+                    <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider">Aapki Uploaded Files / Batches</h3>
+                </div>
+                <button id="clearAllBtn" class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 transition">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear All Files
+                </button>
+            </div>
+
+            <!-- Files Badges List -->
+            <div id="fileListContainer" class="flex flex-wrap gap-2 max-h-36 overflow-y-auto p-1">
+                <!-- Dynamic File Pills -->
+            </div>
+        </div>
+
+        <!-- Dashboard UI -->
         <div id="dashboard" class="hidden space-y-6">
             
             <!-- Filters & Search -->
             <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col md:flex-row gap-4 justify-between items-center">
+                
                 <!-- Search Input -->
                 <div class="relative w-full md:w-80">
                     <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
                     <input type="text" id="searchInput" placeholder="Search class or topic..." 
                         class="w-full bg-slate-900 text-slate-200 pl-9 pr-4 py-2 rounded-lg text-sm border border-slate-700 focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <!-- Category Selector -->
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <span class="text-xs font-medium text-slate-400 whitespace-nowrap">Subject:</span>
+                    <select id="categorySelect" class="bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 w-full md:w-auto">
+                        <option value="all">All Categories</option>
+                    </select>
                 </div>
 
                 <!-- Type Filters -->
@@ -69,23 +96,14 @@
                 </div>
             </div>
 
-            <!-- Categories Dropdown / Selector -->
-            <div class="flex items-center gap-3">
-                <span class="text-sm font-medium text-slate-400">Subject/Folder:</span>
-                <select id="categorySelect" class="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 flex-grow md:flex-grow-0">
-                    <option value="all">All Categories</option>
-                </select>
-            </div>
-
-            <!-- Items Counter -->
-            <div class="text-xs text-slate-400">
-                Total Found: <span id="itemCount" class="font-bold text-indigo-400">0</span> Items
+            <!-- Header Info -->
+            <div class="flex justify-between items-center text-xs text-slate-400">
+                <div>Active File: <span id="activeFileName" class="font-bold text-indigo-400">None</span></div>
+                <div>Total Found: <span id="itemCount" class="font-bold text-indigo-400">0</span> Items</div>
             </div>
 
             <!-- Cards Grid -->
-            <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Cards will be dynamically inserted here -->
-            </div>
+            <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
     </main>
 
@@ -98,8 +116,22 @@
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
+            
             <div class="relative bg-black aspect-video flex items-center justify-center">
                 <video id="hlsPlayer" controls class="w-full h-full"></video>
+            </div>
+
+            <!-- Fallback Options -->
+            <div class="p-4 bg-slate-800 border-t border-slate-700 flex flex-col md:flex-row justify-between items-center gap-3">
+                <p id="playerStatus" class="text-xs text-amber-400 font-medium">Video load ho rahi hai...</p>
+                <div class="flex gap-2">
+                    <button id="copyUrlBtn" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-2 rounded-lg transition flex items-center gap-1">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Link
+                    </button>
+                    <a id="externalLinkBtn" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-xs px-3 py-2 rounded-lg transition flex items-center gap-1">
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Open Direct / VLC
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -108,44 +140,76 @@
     <script>
         lucide.createIcons();
 
-        let allData = [];
+        // Application State
+        let uploadedFiles = []; // Array of { id, fileName, items }
+        let activeFileId = null;
         let hlsInstance = null;
+        let currentActiveUrl = '';
+        let currentTypeFilter = 'all';
 
         // DOM Elements
         const fileInput = document.getElementById('fileInput');
         const welcomeBox = document.getElementById('welcomeBox');
         const dashboard = document.getElementById('dashboard');
+        const filesFolderSection = document.getElementById('filesFolderSection');
+        const fileListContainer = document.getElementById('fileListContainer');
         const cardsGrid = document.getElementById('cardsGrid');
         const categorySelect = document.getElementById('categorySelect');
         const searchInput = document.getElementById('searchInput');
         const itemCount = document.getElementById('itemCount');
-        const resetBtn = document.getElementById('resetBtn');
+        const activeFileName = document.getElementById('activeFileName');
+        const clearAllBtn = document.getElementById('clearAllBtn');
 
         // Modal Elements
         const videoModal = document.getElementById('videoModal');
         const modalVideoTitle = document.getElementById('modalVideoTitle');
         const hlsPlayer = document.getElementById('hlsPlayer');
         const closeModalBtn = document.getElementById('closeModalBtn');
+        const playerStatus = document.getElementById('playerStatus');
+        const copyUrlBtn = document.getElementById('copyUrlBtn');
+        const externalLinkBtn = document.getElementById('externalLinkBtn');
 
-        let currentTypeFilter = 'all';
-
-        // Parse TXT File
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const text = event.target.result;
-                parseTxtContent(text);
-            };
-            reader.readAsText(file);
+        // Load Saved Data from LocalStorage on Startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedFiles = localStorage.getItem('multiCourseFiles');
+            if (savedFiles) {
+                uploadedFiles = JSON.parse(savedFiles);
+                if (uploadedFiles.length > 0) {
+                    activeFileId = uploadedFiles[0].id;
+                    renderApp();
+                }
+            }
         });
 
+        // Handle File Uploads (Multiple supported)
+        fileInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            for (const file of files) {
+                const text = await file.text();
+                const parsedItems = parseTxtContent(text);
+
+                if (parsedItems.length > 0) {
+                    const fileObj = {
+                        id: 'file_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                        fileName: file.name,
+                        items: parsedItems
+                    };
+                    uploadedFiles.push(fileObj);
+                    activeFileId = fileObj.id; // Switch to newly uploaded file
+                }
+            }
+
+            saveToLocalStorage();
+            renderApp();
+            fileInput.value = '';
+        });
+
+        // Parse Single TXT Content
         function parseTxtContent(text) {
             const lines = text.split('\n');
-            allData = [];
-            const categories = new Set();
+            const items = [];
 
             lines.forEach(line => {
                 line = line.trim();
@@ -154,72 +218,146 @@
                 let category = "General";
                 let rest = line;
 
-                // Extract Category from brackets (e.g. (Basic Chemistry complete))
                 const categoryMatch = line.match(/^\(([^)]+)\)\s*(.*)/);
                 if (categoryMatch) {
                     category = categoryMatch[1].trim();
                     rest = categoryMatch[2].trim();
                 }
 
-                // Extract URL (http or https)
                 const urlIndex = rest.indexOf('http');
                 if (urlIndex !== -1) {
-                    let title = rest.substring(0, urlIndex).trim();
-                    if (title.endsWith(':')) {
-                        title = title.slice(0, -1).trim();
-                    }
+                    let title = rest.substring(0, urlIndex).trim().replace(/:$/, '');
                     const url = rest.substring(urlIndex).trim();
-
-                    let type = 'pdf';
-                    if (url.includes('.m3u8') || url.includes('contentId=')) {
-                        type = 'video';
-                    }
+                    let type = (url.includes('.m3u8') || url.includes('contentId=')) ? 'video' : 'pdf';
 
                     if (title && url) {
-                        allData.push({ category, title, url, type });
-                        categories.add(category);
+                        items.push({ category, title, url, type });
                     }
                 }
             });
 
-            // Populate Category Select Dropdown
+            return items;
+        }
+
+        // Main Render Function
+        function renderApp() {
+            if (uploadedFiles.length === 0) {
+                welcomeBox.classList.remove('hidden');
+                filesFolderSection.classList.add('hidden');
+                dashboard.classList.add('hidden');
+                return;
+            }
+
+            welcomeBox.classList.add('hidden');
+            filesFolderSection.classList.remove('hidden');
+            dashboard.classList.remove('hidden');
+
+            renderFileList();
+            renderCategoryDropdown();
+            renderDashboardCards();
+            lucide.createIcons();
+        }
+
+        // Render File Folder Badges
+        function renderFileList() {
+            fileListContainer.innerHTML = '';
+
+            uploadedFiles.forEach(file => {
+                const isActive = file.id === activeFileId;
+                const pill = document.createElement('div');
+                pill.className = `flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer transition ${
+                    isActive 
+                    ? 'bg-indigo-600 text-white shadow-md border border-indigo-400' 
+                    : 'bg-slate-700/70 text-slate-300 hover:bg-slate-700 border border-slate-600'
+                }`;
+
+                pill.innerHTML = `
+                    <div onclick="selectFile('${file.id}')" class="flex items-center gap-2 flex-grow">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-indigo-400'}"></i>
+                        <span class="max-w-[150px] truncate">${file.fileName}</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-indigo-800 text-indigo-100' : 'bg-slate-800 text-slate-400'}">
+                            ${file.items.length}
+                        </span>
+                    </div>
+                    <button onclick="deleteFile('${file.id}', event)" class="hover:text-red-300 opacity-70 hover:opacity-100 p-0.5">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    </button>
+                `;
+
+                fileListContainer.appendChild(pill);
+            });
+        }
+
+        // Switch Active File
+        window.selectFile = function(fileId) {
+            activeFileId = fileId;
+            renderCategoryDropdown();
+            renderDashboardCards();
+            renderFileList();
+            lucide.createIcons();
+        };
+
+        // Delete Single File
+        window.deleteFile = function(fileId, event) {
+            event.stopPropagation();
+            uploadedFiles = uploadedFiles.filter(f => f.id !== fileId);
+            if (activeFileId === fileId) {
+                activeFileId = uploadedFiles.length > 0 ? uploadedFiles[0].id : null;
+            }
+            saveToLocalStorage();
+            renderApp();
+        };
+
+        // Clear All Files
+        clearAllBtn.addEventListener('click', () => {
+            if (confirm("Kya aap saari saved TXT files hatana chahte hain?")) {
+                uploadedFiles = [];
+                activeFileId = null;
+                localStorage.removeItem('multiCourseFiles');
+                renderApp();
+            }
+        });
+
+        // Render Category Dropdown for Active File
+        function renderCategoryDropdown() {
+            const activeFile = uploadedFiles.find(f => f.id === activeFileId);
             categorySelect.innerHTML = '<option value="all">All Categories</option>';
+            
+            if (!activeFile) return;
+
+            activeFileName.textContent = activeFile.fileName;
+            const categories = new Set(activeFile.items.map(i => i.category));
             categories.forEach(cat => {
                 const opt = document.createElement('option');
                 opt.value = cat;
                 opt.textContent = cat;
                 categorySelect.appendChild(opt);
             });
-
-            // LocalStorage Save (Optionally persist)
-            localStorage.setItem('savedCourseData', JSON.stringify(allData));
-
-            renderDashboard();
         }
 
-        // Render Cards based on Filters
-        function renderDashboard() {
-            welcomeBox.classList.add('hidden');
-            dashboard.classList.remove('hidden');
-            resetBtn.classList.remove('hidden');
+        // Render Dashboard Cards
+        function renderDashboardCards() {
+            const activeFile = uploadedFiles.find(f => f.id === activeFileId);
+            cardsGrid.innerHTML = '';
+
+            if (!activeFile) return;
 
             const selectedCat = categorySelect.value;
             const searchVal = searchInput.value.toLowerCase();
 
-            const filteredData = allData.filter(item => {
+            const filteredData = activeFile.items.filter(item => {
                 const matchesCat = (selectedCat === 'all' || item.category === selectedCat);
                 const matchesType = (currentTypeFilter === 'all' || item.type === currentTypeFilter);
-                const matchesSearch = item.title.toLowerCase().includes(searchVal) || item.category.toLowerCase().includes(searchVal);
+                const matchesSearch = item.title.toLowerCase().includes(searchVal);
                 return matchesCat && matchesType && matchesSearch;
             });
 
             itemCount.textContent = filteredData.length;
-            cardsGrid.innerHTML = '';
 
             if (filteredData.length === 0) {
                 cardsGrid.innerHTML = `
-                    <div class="col-span-full text-center py-12 text-slate-500">
-                        Koi result nahi mila. Search ya category change karke dekhein.
+                    <div class="col-span-full text-center py-12 text-slate-500 text-sm">
+                        Koi result nahi mila. Search ya Category badal kar dekhein.
                     </div>
                 `;
                 return;
@@ -228,28 +366,26 @@
             filteredData.forEach(item => {
                 const isVideo = item.type === 'video';
                 const card = document.createElement('div');
-                card.className = "bg-slate-800 border border-slate-700/80 hover:border-indigo-500/50 rounded-xl p-4 flex flex-col justify-between transition-all shadow-sm hover:shadow-indigo-500/10";
+                card.className = "bg-slate-800 border border-slate-700/80 rounded-xl p-4 flex flex-col justify-between hover:border-indigo-500/50 transition";
 
                 card.innerHTML = `
                     <div>
-                        <div class="flex items-center justify-between gap-2 mb-2">
-                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${isVideo ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
-                                ${isVideo ? 'VIDEO CLASS' : 'PDF NOTES'}
-                            </span>
-                        </div>
-                        <h4 class="font-medium text-slate-200 text-sm mb-1 line-clamp-2">${item.title}</h4>
+                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded ${isVideo ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
+                            ${isVideo ? 'VIDEO CLASS' : 'PDF NOTES'}
+                        </span>
+                        <h4 class="font-medium text-slate-200 text-sm mt-2 mb-1 line-clamp-2">${item.title}</h4>
                         <p class="text-xs text-slate-400 line-clamp-1 mb-4">${item.category}</p>
                     </div>
 
-                    <div class="pt-3 border-t border-slate-700/50 flex items-center justify-between gap-2">
+                    <div class="pt-3 border-t border-slate-700/50">
                         ${isVideo ? `
                             <button onclick="playVideo('${encodeURIComponent(item.url)}', '${encodeURIComponent(item.title)}')" 
-                                class="w-full flex items-center justify-center gap-2 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white text-xs font-semibold py-2 px-3 rounded-lg transition">
-                                <i data-lucide="play-circle" class="w-4 h-4"></i> Watch Video
+                                class="w-full flex items-center justify-center gap-2 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white text-xs font-semibold py-2 rounded-lg transition">
+                                <i data-lucide="play-circle" class="w-4 h-4"></i> Play Video
                             </button>
                         ` : `
                             <a href="${item.url}" target="_blank" 
-                                class="w-full flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 text-slate-200 hover:text-white text-xs font-semibold py-2 px-3 rounded-lg transition">
+                                class="w-full flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold py-2 rounded-lg transition">
                                 <i data-lucide="file-text" class="w-4 h-4"></i> Open PDF
                             </a>
                         `}
@@ -261,81 +397,65 @@
             lucide.createIcons();
         }
 
-        // Play Video Function
+        // Play Video Player Modal
         window.playVideo = function(encodedUrl, encodedTitle) {
-            const url = decodeURIComponent(encodedUrl);
+            currentActiveUrl = decodeURIComponent(encodedUrl);
             const title = decodeURIComponent(encodedTitle);
 
             modalVideoTitle.textContent = title;
+            externalLinkBtn.href = currentActiveUrl;
             videoModal.classList.remove('hidden');
+            playerStatus.textContent = "Video load ho rahi hai...";
 
-            if (Hls.isSupported() && url.endsWith('.m3u8')) {
-                if (hlsInstance) hlsInstance.destroy();
+            if (hlsInstance) hlsInstance.destroy();
+
+            if (Hls.isSupported()) {
                 hlsInstance = new Hls();
-                hlsInstance.loadSource(url);
+                hlsInstance.loadSource(currentActiveUrl);
                 hlsInstance.attachMedia(hlsPlayer);
+                
                 hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+                    playerStatus.textContent = "Playing...";
                     hlsPlayer.play();
                 });
+
+                hlsInstance.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        playerStatus.textContent = "❌ CORS / Stream Restriction. Neeche 'Open Direct' karke dekhein.";
+                    }
+                });
             } else if (hlsPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-                hlsPlayer.src = url;
+                hlsPlayer.src = currentActiveUrl;
                 hlsPlayer.play();
-            } else {
-                // If direct playback fails or restricted link, open directly in new tab
-                window.open(url, '_blank');
             }
         };
 
-        // Close Modal
+        // Helper Functions
+        copyUrlBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(currentActiveUrl);
+            alert("Video Link Copy ho gaya!");
+        });
+
         closeModalBtn.addEventListener('click', () => {
             videoModal.classList.add('hidden');
             hlsPlayer.pause();
             if (hlsInstance) hlsInstance.destroy();
         });
 
-        // Search & Filters Listener
-        searchInput.addEventListener('input', renderDashboard);
-        categorySelect.addEventListener('change', renderDashboard);
+        function saveToLocalStorage() {
+            localStorage.setItem('multiCourseFiles', JSON.stringify(uploadedFiles));
+        }
+
+        searchInput.addEventListener('input', renderDashboardCards);
+        categorySelect.addEventListener('change', renderDashboardCards);
 
         document.querySelectorAll('.filter-type-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.filter-type-btn').forEach(b => {
-                    b.classList.remove('bg-indigo-600', 'active');
-                    b.classList.add('bg-slate-700');
-                });
-                e.target.classList.remove('bg-slate-700');
-                e.target.classList.add('bg-indigo-600', 'active');
-
+                document.querySelectorAll('.filter-type-btn').forEach(b => b.classList.replace('bg-indigo-600', 'bg-slate-700'));
+                e.target.classList.replace('bg-slate-700', 'bg-indigo-600');
                 currentTypeFilter = e.target.dataset.type;
-                renderDashboard();
+                renderDashboardCards();
             });
-        });
-
-        // Reset App
-        resetBtn.addEventListener('click', () => {
-            localStorage.removeItem('savedCourseData');
-            allData = [];
-            welcomeBox.classList.remove('hidden');
-            dashboard.classList.add('hidden');
-            resetBtn.classList.add('hidden');
-            fileInput.value = '';
-        });
-
-        // Load Saved Data on Refresh if exists
-        window.addEventListener('DOMContentLoaded', () => {
-            const saved = localStorage.getItem('savedCourseData');
-            if (saved) {
-                allData = JSON.parse(saved);
-                const categories = new Set(allData.map(i => i.category));
-                categorySelect.innerHTML = '<option value="all">All Categories</option>';
-                categories.forEach(cat => {
-                    const opt = document.createElement('option');
-                    opt.value = cat;
-                    opt.textContent = cat;
-                    categorySelect.appendChild(opt);
-                });
-                renderDashboard();
-            }
         });
     </script>
 </body>
