@@ -3,131 +3,114 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Uttar Pradesh B.Sc Nursing 1.0 Course Player</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
+  <title>Classplus Course Portal</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
-    .app-container { display: flex; min-height: 100vh; flex-direction: row; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+    body { background-color: #0f172a; color: #f8fafc; padding: 20px; min-height: 100vh; }
 
-    .sidebar { width: 360px; background: #1e293b; padding: 16px; border-right: 1px solid #334155; display: flex; flex-direction: column; gap: 12px; }
-    .sidebar h2 { font-size: 1.1rem; color: #38bdf8; text-align: center; }
+    .header { text-align: center; margin-bottom: 24px; }
+    .header h1 { color: #38bdf8; font-size: 1.8rem; margin-bottom: 8px; }
+    .header p { color: #94a3b8; font-size: 0.9rem; }
 
-    .tab-buttons { display: flex; gap: 8px; }
-    .tab-btn { flex: 1; padding: 8px; background: #334155; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
-    .tab-btn.active { background: #0284c7; font-weight: bold; }
+    .search-card { max-width: 600px; margin: 0 auto 24px auto; background: #1e293b; padding: 16px; border-radius: 12px; border: 1px solid #334155; }
+    .search-group { display: flex; gap: 10px; margin-top: 10px; }
+    input[type="text"] { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #475569; color: #fff; border-radius: 8px; font-size: 0.95rem; outline: none; }
+    input[type="text"]:focus { border-color: #0284c7; }
+    button { padding: 12px 20px; background: #0284c7; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    button:hover { background: #0369a1; }
 
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; max-width: 1200px; margin: 0 auto; }
+    .card { background: #1e293b; border: 1px solid #334155; padding: 16px; border-radius: 10px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; }
+    .card h3 { font-size: 1.05rem; color: #f1f5f9; }
+    .org-badge { display: inline-block; background: #0f172a; color: #38bdf8; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; width: fit-content; border: 1px solid #334155; }
+    .card-btn { width: 100%; background: #10b981; padding: 10px; border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; display: block; }
+    .card-btn:hover { background: #059669; }
 
-    .input-card { display: flex; flex-direction: column; gap: 8px; background: #0f172a; padding: 12px; border-radius: 8px; }
-    .input-card label { font-size: 0.8rem; color: #94a3b8; }
-    .input-card input { padding: 8px; background: #1e293b; border: 1px solid #475569; color: #fff; border-radius: 4px; font-size: 0.85rem; }
-    .input-card button { padding: 10px; background: #10b981; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 6px; }
-
-    .pdf-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-    .pdf-list a { color: #38bdf8; text-decoration: none; font-size: 0.9rem; background: #0f172a; padding: 8px; border-radius: 4px; display: block; }
-    .pdf-list a:hover { background: #334155; }
-
-    .main-player { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-    .player-container { width: 100%; max-width: 900px; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; }
-    video { width: 100%; height: 100%; }
-    #videoTitle { margin-top: 12px; font-weight: 500; color: #cbd5e1; }
-
-    @media (max-width: 768px) {
-      .app-container { flex-direction: column-reverse; }
-      .sidebar { width: 100%; }
+    @media (max-width: 600px) {
+      .search-group { flex-direction: column; }
+      body { padding: 12px; }
     }
   </style>
 </head>
 <body>
-  <div class="app-container">
-    <div class="sidebar">
-      <h2>B.Sc Nursing Batch</h2>
-      <div class="tab-buttons">
-        <button class="tab-btn active" onclick="switchTab(event, 'drm')">Live Player</button>
-        <button class="tab-btn" onclick="switchTab(event, 'pdfs')">PDF Notes</button>
-      </div>
 
-      <div id="drm" class="tab-content active">
-        <div class="input-card">
-          <label>MPD Stream URL:</label>
-          <input type="text" id="mpdUrl" placeholder="MPD Link yahan dalein">
-          
-          <label>DRM Key (KID:KEY):</label>
-          <input type="text" id="keyPair" placeholder="6573a98cdf4d65bbe27d382338138c4f:7fc0cf29fc7ca6feb153c79c07222eae">
-          
-          <button onclick="playDRMStream()">Stream Play Karein</button>
-        </div>
-      </div>
+  <div class="header">
+    <h1>Classplus Institute Web Portal</h1>
+    <p>Apna Org Code chunen ya search karke portal access karein</p>
+  </div>
 
-      <div id="pdfs" class="tab-content">
-        <ul class="pdf-list">
-          <li><a href="https://cdn-wl-assets.classplus.co/production/352407/8fa0f300-ce39-4285-a3e7-ab391f06ac72.pdf" target="_blank">Chemistry Important Topics PDF</a></li>
-          <li><a href="https://cdn-wl-assets.classplus.co/production/352407/587ba46a-e961-458e-81af-4cefec5c60a8.pdf" target="_blank">Elements 1–30 Atomic Mass PDF</a></li>
-          <li><a href="https://cdn-wl-assets.classplus.co/production/352407/c959310d-8fa7-46a6-b244-821b0516ef1c.pdf" target="_blank">Pollution & Environment PDF</a></li>
-          <li><a href="https://cdn-wl-assets.classplus.co/production/352407/b4714db9-82fe-4ed0-a7e6-7c3259ab0369.pdf" target="_blank">Important Chemical Formula PDF</a></li>
-        </ul>
-      </div>
+  <div class="search-card">
+    <label style="font-size: 0.85rem; color: #94a3b8;">Direct Custom Org Code Access:</label>
+    <div class="search-group">
+      <input type="text" id="customOrg" placeholder="Enter Org Code (e.g. EBEPI)">
+      <button onclick="openCustomOrg()">Open Portal</button>
     </div>
-
-    <div class="main-player">
-      <div class="player-container">
-        <video id="video" controls autoplay></video>
-      </div>
-      <h3 id="videoTitle">Select or Paste Stream to Play</h3>
+    <div style="margin-top: 14px;">
+      <input type="text" id="searchInput" onkeyup="filterCards()" placeholder="Search Institute Name or Org Code...">
     </div>
   </div>
 
+  <div class="grid-container" id="instituteGrid"></div>
+
   <script>
-    let player;
+    const institutes = [
+      { name: "Wisdom Nursing Classes", code: "EBEPI" },
+      { name: "GDC CLASSES", code: "GDCCLASS" },
+      { name: "Concept RNA Nursing Coaching", code: "NBHOM" },
+      { name: "Z to F Medical & Nursing Academy", code: "EOCJVH" },
+      { name: "Vijay Education", code: "CXAZC" },
+      { name: "TIWARI CLASSES", code: "UEREG" },
+      { name: "GURU NURSING ACADEMY", code: "AOGBW" },
+      { name: "DNA Nursing Academy", code: "TYTQG" },
+      { name: "OM Nursing Academy", code: "BGCJO" },
+      { name: "UDAAN NURSING ACADEMY", code: "ZCVXQ" },
+      { name: "NURSING 2 NORCET", code: "LADCHR" },
+      { name: "ONLINE SCHOOL INDIA", code: "MZS" },
+      { name: "Reasoning Rishi Sir", code: "QXRTB" },
+      { name: "Shivalya Classes", code: "JFGPO" },
+      { name: "PRATIBHA CLASSES", code: "JNIGJ" },
+      { name: "India Studies", code: "MQPFF" }
+    ];
 
-    document.addEventListener('DOMContentLoaded', () => {
-      shaka.polyfill.installAll();
-      if (shaka.Player.isBrowserSupported()) {
-        const video = document.getElementById('video');
-        player = new shaka.Player(video);
-        player.addEventListener('error', (e) => console.error('Shaka Player Error:', e.detail));
-      } else {
-        alert('Aapka browser video player support nahi karta.');
-      }
-    });
-
-    async function playDRMStream() {
-      const mpdUrl = document.getElementById('mpdUrl').value.trim();
-      const keyPair = document.getElementById('keyPair').value.trim();
-
-      if (!mpdUrl) {
-        alert('Kripya MPD URL enter karein.');
-        return;
-      }
-
-      let clearKeysObj = {};
-      if (keyPair && keyPair.includes(':')) {
-        const [kid, key] = keyPair.split(':');
-        clearKeysObj[kid.trim()] = key.trim();
-      }
-
-      player.configure({
-        drm: { clearKeys: clearKeysObj }
+    function loadInstitutes() {
+      const grid = document.getElementById('instituteGrid');
+      grid.innerHTML = '';
+      institutes.forEach(inst => {
+        grid.innerHTML += `
+          <div class="card">
+            <div>
+              <h3>${inst.name}</h3>
+              <div class="org-badge" style="margin-top: 8px;">ORG: ${inst.code}</div>
+            </div>
+            <button class="card-btn" onclick="launchPortal('${inst.code}')">Access Portal</button>
+          </div>
+        `;
       });
+    }
 
-      try {
-        await player.load(mpdUrl);
-        document.getElementById('videoTitle').innerText = 'Playing Stream';
-      } catch (err) {
-        console.error('Error loading stream:', err);
-        alert('Stream load nahi ho saki. Link ya Key galat ho sakti hai.');
+    function filterCards() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.card');
+      institutes.forEach((inst, index) => {
+        const isMatch = inst.name.toLowerCase().includes(query) || inst.code.toLowerCase().includes(query);
+        cards[index].style.display = isMatch ? 'flex' : 'none';
+      });
+    }
+
+    function launchPortal(code) {
+      window.open(`https://web.classplusapp.com/login?orgCode=${code}`, '_blank');
+    }
+
+    function openCustomOrg() {
+      const code = document.getElementById('customOrg').value.trim();
+      if (code) {
+        launchPortal(code);
+      } else {
+        alert('Kripya valid Org Code enter karein.');
       }
     }
 
-    function switchTab(evt, tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      
-      document.getElementById(tabId).classList.add('active');
-      evt.currentTarget.classList.add('active');
-    }
+    loadInstitutes();
   </script>
 </body>
 </html>
