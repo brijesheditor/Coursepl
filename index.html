@@ -1,116 +1,342 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Classplus Course Portal</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
-    body { background-color: #0f172a; color: #f8fafc; padding: 20px; min-height: 100vh; }
-
-    .header { text-align: center; margin-bottom: 24px; }
-    .header h1 { color: #38bdf8; font-size: 1.8rem; margin-bottom: 8px; }
-    .header p { color: #94a3b8; font-size: 0.9rem; }
-
-    .search-card { max-width: 600px; margin: 0 auto 24px auto; background: #1e293b; padding: 16px; border-radius: 12px; border: 1px solid #334155; }
-    .search-group { display: flex; gap: 10px; margin-top: 10px; }
-    input[type="text"] { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #475569; color: #fff; border-radius: 8px; font-size: 0.95rem; outline: none; }
-    input[type="text"]:focus { border-color: #0284c7; }
-    button { padding: 12px 20px; background: #0284c7; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-    button:hover { background: #0369a1; }
-
-    .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; max-width: 1200px; margin: 0 auto; }
-    .card { background: #1e293b; border: 1px solid #334155; padding: 16px; border-radius: 10px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; }
-    .card h3 { font-size: 1.05rem; color: #f1f5f9; }
-    .org-badge { display: inline-block; background: #0f172a; color: #38bdf8; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; width: fit-content; border: 1px solid #334155; }
-    .card-btn { width: 100%; background: #10b981; padding: 10px; border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; display: block; }
-    .card-btn:hover { background: #059669; }
-
-    @media (max-width: 600px) {
-      .search-group { flex-direction: column; }
-      body { padding: 12px; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Classes & PDF Portal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HLS.js for .m3u8 Video Playback -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
 
-  <div class="header">
-    <h1>Classplus Institute Web Portal</h1>
-    <p>Apna Org Code chunen ya search karke portal access karein</p>
-  </div>
-
-  <div class="search-card">
-    <label style="font-size: 0.85rem; color: #94a3b8;">Direct Custom Org Code Access:</label>
-    <div class="search-group">
-      <input type="text" id="customOrg" placeholder="Enter Org Code (e.g. EBEPI)">
-      <button onclick="openCustomOrg()">Open Portal</button>
-    </div>
-    <div style="margin-top: 14px;">
-      <input type="text" id="searchInput" onkeyup="filterCards()" placeholder="Search Institute Name or Org Code...">
-    </div>
-  </div>
-
-  <div class="grid-container" id="instituteGrid"></div>
-
-  <script>
-    const institutes = [
-      { name: "Wisdom Nursing Classes", code: "EBEPI" },
-      { name: "GDC CLASSES", code: "GDCCLASS" },
-      { name: "Concept RNA Nursing Coaching", code: "NBHOM" },
-      { name: "Z to F Medical & Nursing Academy", code: "EOCJVH" },
-      { name: "Vijay Education", code: "CXAZC" },
-      { name: "TIWARI CLASSES", code: "UEREG" },
-      { name: "GURU NURSING ACADEMY", code: "AOGBW" },
-      { name: "DNA Nursing Academy", code: "TYTQG" },
-      { name: "OM Nursing Academy", code: "BGCJO" },
-      { name: "UDAAN NURSING ACADEMY", code: "ZCVXQ" },
-      { name: "NURSING 2 NORCET", code: "LADCHR" },
-      { name: "ONLINE SCHOOL INDIA", code: "MZS" },
-      { name: "Reasoning Rishi Sir", code: "QXRTB" },
-      { name: "Shivalya Classes", code: "JFGPO" },
-      { name: "PRATIBHA CLASSES", code: "JNIGJ" },
-      { name: "India Studies", code: "MQPFF" }
-    ];
-
-    function loadInstitutes() {
-      const grid = document.getElementById('instituteGrid');
-      grid.innerHTML = '';
-      institutes.forEach(inst => {
-        grid.innerHTML += `
-          <div class="card">
-            <div>
-              <h3>${inst.name}</h3>
-              <div class="org-badge" style="margin-top: 8px;">ORG: ${inst.code}</div>
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-40 shadow-lg">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <i data-lucide="book-open-check" class="w-8 h-8 text-indigo-400"></i>
+                <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                    Course Content Portal
+                </h1>
             </div>
-            <button class="card-btn" onclick="launchPortal('${inst.code}')">Access Portal</button>
-          </div>
-        `;
-      });
-    }
 
-    function filterCards() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const cards = document.querySelectorAll('.card');
-      institutes.forEach((inst, index) => {
-        const isMatch = inst.name.toLowerCase().includes(query) || inst.code.toLowerCase().includes(query);
-        cards[index].style.display = isMatch ? 'flex' : 'none';
-      });
-    }
+            <!-- Upload Box -->
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <label class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg cursor-pointer transition shadow">
+                    <i data-lucide="upload" class="w-4 h-4"></i>
+                    <span class="text-sm font-semibold">Upload TXT File</span>
+                    <input type="file" id="fileInput" accept=".txt" class="hidden">
+                </label>
+                <button id="resetBtn" class="hidden bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-lg text-sm transition">
+                    Reset
+                </button>
+            </div>
+        </div>
+    </header>
 
-    function launchPortal(code) {
-      window.open(`https://web.classplusapp.com/login?orgCode=${code}`, '_blank');
-    }
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto p-4 md:p-6 flex-grow w-full">
+        
+        <!-- Welcome / Instructions State -->
+        <div id="welcomeBox" class="text-center py-16 bg-slate-800/50 rounded-2xl border border-dashed border-slate-700 my-8">
+            <i data-lucide="file-text" class="w-16 h-16 text-indigo-400 mx-auto mb-4 opacity-80"></i>
+            <h2 class="text-2xl font-bold mb-2 text-slate-200">Apni Course TXT File Upload Karein</h2>
+            <p class="text-slate-400 max-w-md mx-auto mb-6 text-sm">
+                Apni `.txt` file select karein. Yeh app automatic saare subjects, PDF notes aur video classes ko categorize karke dikha dega.
+            </p>
+        </div>
 
-    function openCustomOrg() {
-      const code = document.getElementById('customOrg').value.trim();
-      if (code) {
-        launchPortal(code);
-      } else {
-        alert('Kripya valid Org Code enter karein.');
-      }
-    }
+        <!-- Dashboard UI (Hidden initially) -->
+        <div id="dashboard" class="hidden space-y-6">
+            
+            <!-- Filters & Search -->
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col md:flex-row gap-4 justify-between items-center">
+                <!-- Search Input -->
+                <div class="relative w-full md:w-80">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+                    <input type="text" id="searchInput" placeholder="Search class or topic..." 
+                        class="w-full bg-slate-900 text-slate-200 pl-9 pr-4 py-2 rounded-lg text-sm border border-slate-700 focus:outline-none focus:border-indigo-500">
+                </div>
 
-    loadInstitutes();
-  </script>
+                <!-- Type Filters -->
+                <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                    <button class="filter-type-btn active bg-indigo-600 px-4 py-1.5 rounded-lg text-sm font-medium" data-type="all">All</button>
+                    <button class="filter-type-btn bg-slate-700 hover:bg-slate-600 px-4 py-1.5 rounded-lg text-sm font-medium" data-type="video">🎥 Videos</button>
+                    <button class="filter-type-btn bg-slate-700 hover:bg-slate-600 px-4 py-1.5 rounded-lg text-sm font-medium" data-type="pdf">📄 PDFs</button>
+                </div>
+            </div>
+
+            <!-- Categories Dropdown / Selector -->
+            <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-slate-400">Subject/Folder:</span>
+                <select id="categorySelect" class="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 flex-grow md:flex-grow-0">
+                    <option value="all">All Categories</option>
+                </select>
+            </div>
+
+            <!-- Items Counter -->
+            <div class="text-xs text-slate-400">
+                Total Found: <span id="itemCount" class="font-bold text-indigo-400">0</span> Items
+            </div>
+
+            <!-- Cards Grid -->
+            <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Video Modal Player -->
+    <div id="videoModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col">
+            <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+                <h3 id="modalVideoTitle" class="font-bold text-indigo-400 text-sm md:text-base line-clamp-1">Video Title</h3>
+                <button id="closeModalBtn" class="text-slate-400 hover:text-white p-1 rounded-lg">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="relative bg-black aspect-video flex items-center justify-center">
+                <video id="hlsPlayer" controls class="w-full h-full"></video>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        lucide.createIcons();
+
+        let allData = [];
+        let hlsInstance = null;
+
+        // DOM Elements
+        const fileInput = document.getElementById('fileInput');
+        const welcomeBox = document.getElementById('welcomeBox');
+        const dashboard = document.getElementById('dashboard');
+        const cardsGrid = document.getElementById('cardsGrid');
+        const categorySelect = document.getElementById('categorySelect');
+        const searchInput = document.getElementById('searchInput');
+        const itemCount = document.getElementById('itemCount');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Modal Elements
+        const videoModal = document.getElementById('videoModal');
+        const modalVideoTitle = document.getElementById('modalVideoTitle');
+        const hlsPlayer = document.getElementById('hlsPlayer');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        let currentTypeFilter = 'all';
+
+        // Parse TXT File
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const text = event.target.result;
+                parseTxtContent(text);
+            };
+            reader.readAsText(file);
+        });
+
+        function parseTxtContent(text) {
+            const lines = text.split('\n');
+            allData = [];
+            const categories = new Set();
+
+            lines.forEach(line => {
+                line = line.trim();
+                if (!line) return;
+
+                let category = "General";
+                let rest = line;
+
+                // Extract Category from brackets (e.g. (Basic Chemistry complete))
+                const categoryMatch = line.match(/^\(([^)]+)\)\s*(.*)/);
+                if (categoryMatch) {
+                    category = categoryMatch[1].trim();
+                    rest = categoryMatch[2].trim();
+                }
+
+                // Extract URL (http or https)
+                const urlIndex = rest.indexOf('http');
+                if (urlIndex !== -1) {
+                    let title = rest.substring(0, urlIndex).trim();
+                    if (title.endsWith(':')) {
+                        title = title.slice(0, -1).trim();
+                    }
+                    const url = rest.substring(urlIndex).trim();
+
+                    let type = 'pdf';
+                    if (url.includes('.m3u8') || url.includes('contentId=')) {
+                        type = 'video';
+                    }
+
+                    if (title && url) {
+                        allData.push({ category, title, url, type });
+                        categories.add(category);
+                    }
+                }
+            });
+
+            // Populate Category Select Dropdown
+            categorySelect.innerHTML = '<option value="all">All Categories</option>';
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                categorySelect.appendChild(opt);
+            });
+
+            // LocalStorage Save (Optionally persist)
+            localStorage.setItem('savedCourseData', JSON.stringify(allData));
+
+            renderDashboard();
+        }
+
+        // Render Cards based on Filters
+        function renderDashboard() {
+            welcomeBox.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+            resetBtn.classList.remove('hidden');
+
+            const selectedCat = categorySelect.value;
+            const searchVal = searchInput.value.toLowerCase();
+
+            const filteredData = allData.filter(item => {
+                const matchesCat = (selectedCat === 'all' || item.category === selectedCat);
+                const matchesType = (currentTypeFilter === 'all' || item.type === currentTypeFilter);
+                const matchesSearch = item.title.toLowerCase().includes(searchVal) || item.category.toLowerCase().includes(searchVal);
+                return matchesCat && matchesType && matchesSearch;
+            });
+
+            itemCount.textContent = filteredData.length;
+            cardsGrid.innerHTML = '';
+
+            if (filteredData.length === 0) {
+                cardsGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-slate-500">
+                        Koi result nahi mila. Search ya category change karke dekhein.
+                    </div>
+                `;
+                return;
+            }
+
+            filteredData.forEach(item => {
+                const isVideo = item.type === 'video';
+                const card = document.createElement('div');
+                card.className = "bg-slate-800 border border-slate-700/80 hover:border-indigo-500/50 rounded-xl p-4 flex flex-col justify-between transition-all shadow-sm hover:shadow-indigo-500/10";
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${isVideo ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
+                                ${isVideo ? 'VIDEO CLASS' : 'PDF NOTES'}
+                            </span>
+                        </div>
+                        <h4 class="font-medium text-slate-200 text-sm mb-1 line-clamp-2">${item.title}</h4>
+                        <p class="text-xs text-slate-400 line-clamp-1 mb-4">${item.category}</p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-700/50 flex items-center justify-between gap-2">
+                        ${isVideo ? `
+                            <button onclick="playVideo('${encodeURIComponent(item.url)}', '${encodeURIComponent(item.title)}')" 
+                                class="w-full flex items-center justify-center gap-2 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white text-xs font-semibold py-2 px-3 rounded-lg transition">
+                                <i data-lucide="play-circle" class="w-4 h-4"></i> Watch Video
+                            </button>
+                        ` : `
+                            <a href="${item.url}" target="_blank" 
+                                class="w-full flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 text-slate-200 hover:text-white text-xs font-semibold py-2 px-3 rounded-lg transition">
+                                <i data-lucide="file-text" class="w-4 h-4"></i> Open PDF
+                            </a>
+                        `}
+                    </div>
+                `;
+                cardsGrid.appendChild(card);
+            });
+
+            lucide.createIcons();
+        }
+
+        // Play Video Function
+        window.playVideo = function(encodedUrl, encodedTitle) {
+            const url = decodeURIComponent(encodedUrl);
+            const title = decodeURIComponent(encodedTitle);
+
+            modalVideoTitle.textContent = title;
+            videoModal.classList.remove('hidden');
+
+            if (Hls.isSupported() && url.endsWith('.m3u8')) {
+                if (hlsInstance) hlsInstance.destroy();
+                hlsInstance = new Hls();
+                hlsInstance.loadSource(url);
+                hlsInstance.attachMedia(hlsPlayer);
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+                    hlsPlayer.play();
+                });
+            } else if (hlsPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                hlsPlayer.src = url;
+                hlsPlayer.play();
+            } else {
+                // If direct playback fails or restricted link, open directly in new tab
+                window.open(url, '_blank');
+            }
+        };
+
+        // Close Modal
+        closeModalBtn.addEventListener('click', () => {
+            videoModal.classList.add('hidden');
+            hlsPlayer.pause();
+            if (hlsInstance) hlsInstance.destroy();
+        });
+
+        // Search & Filters Listener
+        searchInput.addEventListener('input', renderDashboard);
+        categorySelect.addEventListener('change', renderDashboard);
+
+        document.querySelectorAll('.filter-type-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-type-btn').forEach(b => {
+                    b.classList.remove('bg-indigo-600', 'active');
+                    b.classList.add('bg-slate-700');
+                });
+                e.target.classList.remove('bg-slate-700');
+                e.target.classList.add('bg-indigo-600', 'active');
+
+                currentTypeFilter = e.target.dataset.type;
+                renderDashboard();
+            });
+        });
+
+        // Reset App
+        resetBtn.addEventListener('click', () => {
+            localStorage.removeItem('savedCourseData');
+            allData = [];
+            welcomeBox.classList.remove('hidden');
+            dashboard.classList.add('hidden');
+            resetBtn.classList.add('hidden');
+            fileInput.value = '';
+        });
+
+        // Load Saved Data on Refresh if exists
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('savedCourseData');
+            if (saved) {
+                allData = JSON.parse(saved);
+                const categories = new Set(allData.map(i => i.category));
+                categorySelect.innerHTML = '<option value="all">All Categories</option>';
+                categories.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat;
+                    opt.textContent = cat;
+                    categorySelect.appendChild(opt);
+                });
+                renderDashboard();
+            }
+        });
+    </script>
 </body>
 </html>
