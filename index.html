@@ -1,153 +1,166 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="hi" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Content Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- HLS.js -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- HLS.js & Icons -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+<body class="bg-zinc-950 text-zinc-100 font-sans min-h-screen flex flex-col antialiased">
 
-    <!-- Header -->
-    <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-40 shadow-lg">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <!-- Navigation Header -->
+    <header class="bg-zinc-900/90 border-b border-zinc-800 sticky top-0 z-50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <i data-lucide="folder-git2" class="w-8 h-8 text-indigo-400"></i>
+                <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-600/30">
+                    <i data-lucide="play" class="w-5 h-5 fill-current"></i>
+                </div>
                 <div>
-                    <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                        Course Content Portal
-                    </h1>
-                    <p class="text-xs text-slate-400">Multi-File Manager & Video Player</p>
+                    <h1 class="text-base font-bold text-white leading-tight">Course Learning Portal</h1>
+                    <p class="text-[11px] text-zinc-400">Classplus SSL & Link Resolver</p>
                 </div>
             </div>
 
-            <!-- Upload Box -->
-            <div class="flex items-center gap-3 w-full md:w-auto">
-                <label class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg cursor-pointer transition shadow">
-                    <i data-lucide="file-plus" class="w-4 h-4"></i>
-                    <span class="text-sm font-semibold">Upload TXT File(s)</span>
+            <div class="flex items-center gap-3">
+                <label class="flex items-center gap-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition shadow-md active:scale-95">
+                    <i data-lucide="file-plus-2" class="w-4 h-4"></i>
+                    <span>Upload TXT File</span>
                     <input type="file" id="fileInput" accept=".txt" multiple class="hidden">
                 </label>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="max-w-7xl mx-auto p-4 md:p-6 flex-grow w-full space-y-6">
-        
-        <!-- Welcome State -->
-        <div id="welcomeBox" class="text-center py-16 bg-slate-800/50 rounded-2xl border border-dashed border-slate-700 my-8">
-            <i data-lucide="folder-open" class="w-16 h-16 text-indigo-400 mx-auto mb-4 opacity-80"></i>
-            <h2 class="text-2xl font-bold mb-2 text-slate-200">Apni Course TXT Files Upload Karein</h2>
-            <p class="text-slate-400 max-w-md mx-auto mb-6 text-sm">
-                Aap ek saath multiple `.txt` files upload kar sakte hain. Har file alag folder me save ho jayegi.
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-grow space-y-6">
+
+        <!-- Active Files Strip -->
+        <div id="filesFolderSection" class="hidden bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="folder" class="w-4 h-4 text-brand-500"></i>
+                    <span class="text-xs font-bold text-zinc-300 uppercase tracking-wider">Aapki Uploaded Files</span>
+                </div>
+                <button id="clearAllBtn" class="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 transition">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear Cache & Reset
+                </button>
+            </div>
+            <div id="fileListContainer" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <!-- Initial Welcome Banner -->
+        <div id="welcomeBox" class="text-center py-20 bg-zinc-900/50 rounded-2xl border border-dashed border-zinc-800 my-4">
+            <div class="w-16 h-16 rounded-2xl bg-zinc-800 flex items-center justify-center mx-auto mb-4 text-zinc-400">
+                <i data-lucide="upload" class="w-8 h-8"></i>
+            </div>
+            <h2 class="text-xl font-bold text-zinc-200 mb-1">Apni `.txt` File Upload Karein</h2>
+            <p class="text-xs text-zinc-400 max-w-sm mx-auto mb-6">
+                Uploading par SSL certificate errors aur contentid broken links automatic fix ho jayenge.
             </p>
         </div>
 
-        <!-- Files Manager Folder Section -->
-        <div id="filesFolderSection" class="hidden bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-            <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="folder" class="w-5 h-5 text-amber-400"></i>
-                    <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider">Aapki Uploaded Files / Batches</h3>
-                </div>
-                <button id="clearAllBtn" class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 transition">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear All Files
-                </button>
-            </div>
-
-            <!-- Files Badges List -->
-            <div id="fileListContainer" class="flex flex-wrap gap-2 max-h-36 overflow-y-auto p-1">
-                <!-- Dynamic File Pills -->
-            </div>
-        </div>
-
-        <!-- Dashboard UI -->
+        <!-- Dashboard View -->
         <div id="dashboard" class="hidden space-y-6">
-            
-            <!-- Filters & Search -->
-            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col md:flex-row gap-4 justify-between items-center">
-                
-                <!-- Search Input -->
-                <div class="relative w-full md:w-80">
-                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
-                    <input type="text" id="searchInput" placeholder="Search class or topic..." 
-                        class="w-full bg-slate-900 text-slate-200 pl-9 pr-4 py-2 rounded-lg text-sm border border-slate-700 focus:outline-none focus:border-indigo-500">
+
+            <!-- Video Player Window -->
+            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
+                <div class="px-5 py-3 border-b border-zinc-800 flex items-center justify-between gap-4 bg-zinc-900/80">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <span id="playerBadge" class="bg-brand-500/10 text-brand-500 text-[10px] font-bold px-2 py-0.5 rounded border border-brand-500/20">
+                            MEDIA PLAYER
+                        </span>
+                        <h3 id="currentPlayingTitle" class="text-xs md:text-sm font-semibold text-zinc-200 truncate">
+                            List se koi lecture select karein
+                        </h3>
+                    </div>
+                    <span id="playerStatus" class="text-[11px] text-zinc-400 flex items-center gap-1.5 flex-shrink-0">
+                        <span class="w-2 h-2 rounded-full bg-zinc-600"></span> Standby
+                    </span>
                 </div>
 
-                <!-- Category Selector -->
+                <div class="relative bg-black aspect-video flex items-center justify-center">
+                    <video id="mainVideoPlayer" controls class="w-full h-full object-contain hidden"></video>
+                    <iframe id="pdfViewerFrame" class="w-full h-full hidden border-none"></iframe>
+                    
+                    <div id="playerPlaceholder" class="text-center p-6 flex flex-col items-center">
+                        <i data-lucide="tv-2" class="w-12 h-12 text-zinc-700 mb-3"></i>
+                        <p class="text-xs text-zinc-500">Select any lecture below to play</p>
+                    </div>
+                </div>
+
+                <!-- External Player Launchers -->
+                <div class="p-3 bg-zinc-900 border-t border-zinc-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="text-[11px] text-zinc-400">External App Launchers:</div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button id="copyUrlBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Fixed URL
+                        </button>
+                        <a id="idmIntentBtn" href="#" target="_blank" class="bg-emerald-600/20 hover:bg-emerald-600 border border-emerald-500/30 text-emerald-300 hover:text-white text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i> Open 1DM App
+                        </a>
+                        <a id="vlcIntentBtn" href="#" target="_blank" class="bg-amber-600/20 hover:bg-amber-600 border border-amber-500/30 text-amber-300 hover:text-white text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                            <i data-lucide="play" class="w-3.5 h-3.5"></i> Open VLC Player
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtering & Search -->
+            <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex flex-col md:flex-row gap-4 justify-between items-center">
+                <div class="relative w-full md:w-80">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3 text-zinc-500"></i>
+                    <input type="text" id="searchInput" placeholder="Search topic..." 
+                        class="w-full bg-zinc-950 text-zinc-200 pl-10 pr-4 py-2 rounded-lg text-xs border border-zinc-800 focus:outline-none focus:border-brand-500 transition">
+                </div>
                 <div class="flex items-center gap-2 w-full md:w-auto">
-                    <span class="text-xs font-medium text-slate-400 whitespace-nowrap">Subject:</span>
-                    <select id="categorySelect" class="bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 w-full md:w-auto">
-                        <option value="all">All Categories</option>
+                    <span class="text-xs text-zinc-400 font-medium">Subject:</span>
+                    <select id="categorySelect" class="bg-zinc-950 border border-zinc-800 text-zinc-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-brand-500 w-full md:w-auto">
+                        <option value="all">All Subjects</option>
                     </select>
                 </div>
-
-                <!-- Type Filters -->
-                <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-                    <button class="filter-type-btn active bg-indigo-600 px-4 py-1.5 rounded-lg text-sm font-medium" data-type="all">All</button>
-                    <button class="filter-type-btn bg-slate-700 hover:bg-slate-600 px-4 py-1.5 rounded-lg text-sm font-medium" data-type="video">🎥 Videos</button>
-                    <button class="filter-type-btn bg-slate-700 hover:bg-slate-600 px-4 py-1.5 rounded-lg text-sm font-medium" data-type="pdf">📄 PDFs</button>
-                </div>
             </div>
 
-            <!-- Header Info -->
-            <div class="flex justify-between items-center text-xs text-slate-400">
-                <div>Active File: <span id="activeFileName" class="font-bold text-indigo-400">None</span></div>
-                <div>Total Found: <span id="itemCount" class="font-bold text-indigo-400">0</span> Items</div>
+            <div class="flex justify-between items-center text-xs text-zinc-400 px-1">
+                <div>Active File: <span id="activeFileName" class="font-bold text-brand-500">None</span></div>
+                <div>Total Items: <span id="itemCount" class="font-bold text-zinc-200">0</span></div>
             </div>
 
-            <!-- Cards Grid -->
-            <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+
         </div>
     </main>
 
-    <!-- Video Modal Player -->
-    <div id="videoModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-800 rounded-2xl border border-slate-700 w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col">
-            <div class="p-4 border-b border-slate-700 flex justify-between items-center">
-                <h3 id="modalVideoTitle" class="font-bold text-indigo-400 text-sm md:text-base line-clamp-1">Video Title</h3>
-                <button id="closeModalBtn" class="text-slate-400 hover:text-white p-1 rounded-lg">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-            
-            <div class="relative bg-black aspect-video flex items-center justify-center">
-                <video id="hlsPlayer" controls class="w-full h-full"></video>
-            </div>
-
-            <!-- Fallback Options -->
-            <div class="p-4 bg-slate-800 border-t border-slate-700 flex flex-col md:flex-row justify-between items-center gap-3">
-                <p id="playerStatus" class="text-xs text-amber-400 font-medium">Video load ho rahi hai...</p>
-                <div class="flex gap-2">
-                    <button id="copyUrlBtn" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-2 rounded-lg transition flex items-center gap-1">
-                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Link
-                    </button>
-                    <a id="externalLinkBtn" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-xs px-3 py-2 rounded-lg transition flex items-center gap-1">
-                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Open Direct / VLC
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Script Logic -->
     <script>
         lucide.createIcons();
 
-        // Application State
-        let uploadedFiles = []; // Array of { id, fileName, items }
+        // Automatic LocalStorage Cache Purge
+        const CACHE_VERSION = "v5_ssl_http_bypass_fix";
+        if (localStorage.getItem('portal_version') !== CACHE_VERSION) {
+            localStorage.removeItem('multiCourseFiles');
+            localStorage.setItem('portal_version', CACHE_VERSION);
+        }
+
+        let uploadedFiles = [];
         let activeFileId = null;
         let hlsInstance = null;
-        let currentActiveUrl = '';
-        let currentTypeFilter = 'all';
+        let currentActiveItem = null;
 
-        // DOM Elements
         const fileInput = document.getElementById('fileInput');
         const welcomeBox = document.getElementById('welcomeBox');
         const dashboard = document.getElementById('dashboard');
@@ -160,16 +173,16 @@
         const activeFileName = document.getElementById('activeFileName');
         const clearAllBtn = document.getElementById('clearAllBtn');
 
-        // Modal Elements
-        const videoModal = document.getElementById('videoModal');
-        const modalVideoTitle = document.getElementById('modalVideoTitle');
-        const hlsPlayer = document.getElementById('hlsPlayer');
-        const closeModalBtn = document.getElementById('closeModalBtn');
+        const mainVideoPlayer = document.getElementById('mainVideoPlayer');
+        const pdfViewerFrame = document.getElementById('pdfViewerFrame');
+        const playerPlaceholder = document.getElementById('playerPlaceholder');
+        const currentPlayingTitle = document.getElementById('currentPlayingTitle');
         const playerStatus = document.getElementById('playerStatus');
+        const playerBadge = document.getElementById('playerBadge');
         const copyUrlBtn = document.getElementById('copyUrlBtn');
-        const externalLinkBtn = document.getElementById('externalLinkBtn');
+        const idmIntentBtn = document.getElementById('idmIntentBtn');
+        const vlcIntentBtn = document.getElementById('vlcIntentBtn');
 
-        // Load Saved Data from LocalStorage on Startup
         window.addEventListener('DOMContentLoaded', () => {
             const savedFiles = localStorage.getItem('multiCourseFiles');
             if (savedFiles) {
@@ -181,7 +194,6 @@
             }
         });
 
-        // Handle File Uploads (Multiple supported)
         fileInput.addEventListener('change', async (e) => {
             const files = Array.from(e.target.files);
             if (files.length === 0) return;
@@ -197,7 +209,7 @@
                         items: parsedItems
                     };
                     uploadedFiles.push(fileObj);
-                    activeFileId = fileObj.id; // Switch to newly uploaded file
+                    activeFileId = fileObj.id;
                 }
             }
 
@@ -206,9 +218,12 @@
             fileInput.value = '';
         });
 
-        // Parse Single TXT Content
-        function parseTxtContent(text) {
-            const lines = text.split('\n');
+        // ROBUST PARSER: FIXES SSL & DOMAIN ISSUES AUTOMATICALLY
+        function parseTxtContent(rawText) {
+            // Fix 1: Converts contentid= & https://contentid= to http:// (HTTP bypasses VLC Certificate Untrusted Error)
+            let fixedText = rawText.replace(/(https?:\/\/)?contentid=/gi, 'http://videos.classplusapp.com/c?contentid=');
+
+            const lines = fixedText.split('\n');
             const items = [];
 
             lines.forEach(line => {
@@ -224,22 +239,21 @@
                     rest = categoryMatch[2].trim();
                 }
 
-                const urlIndex = rest.indexOf('http');
-                if (urlIndex !== -1) {
-                    let title = rest.substring(0, urlIndex).trim().replace(/:$/, '');
-                    const url = rest.substring(urlIndex).trim();
-                    let type = (url.includes('.m3u8') || url.includes('contentId=')) ? 'video' : 'pdf';
+                let urlMatch = rest.match(/https?:\/\/[^\s]+|http:\/\/[^\s]+/i);
+                if (urlMatch) {
+                    let cleanUrl = urlMatch[0];
+                    let title = rest.replace(cleanUrl, '').trim().replace(/[:\-]$/, '').trim();
+                    if (!title) title = "Lecture";
 
-                    if (title && url) {
-                        items.push({ category, title, url, type });
-                    }
+                    let type = (cleanUrl.includes('.m3u8') || cleanUrl.includes('.mpd') || cleanUrl.includes('contentid=')) ? 'video' : 'pdf';
+
+                    items.push({ category, title, url: cleanUrl, type });
                 }
             });
 
             return items;
         }
 
-        // Main Render Function
         function renderApp() {
             if (uploadedFiles.length === 0) {
                 welcomeBox.classList.remove('hidden');
@@ -258,37 +272,28 @@
             lucide.createIcons();
         }
 
-        // Render File Folder Badges
         function renderFileList() {
             fileListContainer.innerHTML = '';
-
             uploadedFiles.forEach(file => {
                 const isActive = file.id === activeFileId;
                 const pill = document.createElement('div');
-                pill.className = `flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer transition ${
-                    isActive 
-                    ? 'bg-indigo-600 text-white shadow-md border border-indigo-400' 
-                    : 'bg-slate-700/70 text-slate-300 hover:bg-slate-700 border border-slate-600'
+                pill.className = `flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg cursor-pointer transition ${
+                    isActive ? 'bg-brand-600 text-white shadow-sm' : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
                 }`;
 
                 pill.innerHTML = `
-                    <div onclick="selectFile('${file.id}')" class="flex items-center gap-2 flex-grow">
-                        <i data-lucide="file-text" class="w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-indigo-400'}"></i>
-                        <span class="max-w-[150px] truncate">${file.fileName}</span>
-                        <span class="text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-indigo-800 text-indigo-100' : 'bg-slate-800 text-slate-400'}">
+                    <div onclick="selectFile('${file.id}')" class="flex items-center gap-2">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                        <span class="max-w-[140px] truncate">${file.fileName}</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded ${isActive ? 'bg-brand-700 text-white' : 'bg-zinc-900 text-zinc-400'}">
                             ${file.items.length}
                         </span>
                     </div>
-                    <button onclick="deleteFile('${file.id}', event)" class="hover:text-red-300 opacity-70 hover:opacity-100 p-0.5">
-                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                    </button>
                 `;
-
                 fileListContainer.appendChild(pill);
             });
         }
 
-        // Switch Active File
         window.selectFile = function(fileId) {
             activeFileId = fileId;
             renderCategoryDropdown();
@@ -297,32 +302,16 @@
             lucide.createIcons();
         };
 
-        // Delete Single File
-        window.deleteFile = function(fileId, event) {
-            event.stopPropagation();
-            uploadedFiles = uploadedFiles.filter(f => f.id !== fileId);
-            if (activeFileId === fileId) {
-                activeFileId = uploadedFiles.length > 0 ? uploadedFiles[0].id : null;
-            }
-            saveToLocalStorage();
-            renderApp();
-        };
-
-        // Clear All Files
         clearAllBtn.addEventListener('click', () => {
-            if (confirm("Kya aap saari saved TXT files hatana chahte hain?")) {
-                uploadedFiles = [];
-                activeFileId = null;
-                localStorage.removeItem('multiCourseFiles');
-                renderApp();
-            }
+            uploadedFiles = [];
+            activeFileId = null;
+            localStorage.removeItem('multiCourseFiles');
+            renderApp();
         });
 
-        // Render Category Dropdown for Active File
         function renderCategoryDropdown() {
             const activeFile = uploadedFiles.find(f => f.id === activeFileId);
-            categorySelect.innerHTML = '<option value="all">All Categories</option>';
-            
+            categorySelect.innerHTML = '<option value="all">All Subjects</option>';
             if (!activeFile) return;
 
             activeFileName.textContent = activeFile.fileName;
@@ -335,11 +324,9 @@
             });
         }
 
-        // Render Dashboard Cards
         function renderDashboardCards() {
             const activeFile = uploadedFiles.find(f => f.id === activeFileId);
             cardsGrid.innerHTML = '';
-
             if (!activeFile) return;
 
             const selectedCat = categorySelect.value;
@@ -347,49 +334,31 @@
 
             const filteredData = activeFile.items.filter(item => {
                 const matchesCat = (selectedCat === 'all' || item.category === selectedCat);
-                const matchesType = (currentTypeFilter === 'all' || item.type === currentTypeFilter);
                 const matchesSearch = item.title.toLowerCase().includes(searchVal);
-                return matchesCat && matchesType && matchesSearch;
+                return matchesCat && matchesSearch;
             });
 
             itemCount.textContent = filteredData.length;
 
-            if (filteredData.length === 0) {
-                cardsGrid.innerHTML = `
-                    <div class="col-span-full text-center py-12 text-slate-500 text-sm">
-                        Koi result nahi mila. Search ya Category badal kar dekhein.
-                    </div>
-                `;
-                return;
-            }
-
             filteredData.forEach(item => {
                 const isVideo = item.type === 'video';
                 const card = document.createElement('div');
-                card.className = "bg-slate-800 border border-slate-700/80 rounded-xl p-4 flex flex-col justify-between hover:border-indigo-500/50 transition";
+                card.className = "bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 flex flex-col justify-between hover:border-zinc-700 transition";
 
                 card.innerHTML = `
                     <div>
-                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded ${isVideo ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
-                            ${isVideo ? 'VIDEO CLASS' : 'PDF NOTES'}
+                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded ${isVideo ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'} mb-2 inline-block">
+                            ${isVideo ? 'Video Lecture' : 'PDF Document'}
                         </span>
-                        <h4 class="font-medium text-slate-200 text-sm mt-2 mb-1 line-clamp-2">${item.title}</h4>
-                        <p class="text-xs text-slate-400 line-clamp-1 mb-4">${item.category}</p>
+                        <h4 class="font-medium text-zinc-200 text-xs line-clamp-2 mb-1">${item.title}</h4>
+                        <p class="text-[11px] text-zinc-500 line-clamp-1 mb-3">${item.category}</p>
                     </div>
 
-                    <div class="pt-3 border-t border-slate-700/50">
-                        ${isVideo ? `
-                            <button onclick="playVideo('${encodeURIComponent(item.url)}', '${encodeURIComponent(item.title)}')" 
-                                class="w-full flex items-center justify-center gap-2 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white text-xs font-semibold py-2 rounded-lg transition">
-                                <i data-lucide="play-circle" class="w-4 h-4"></i> Play Video
-                            </button>
-                        ` : `
-                            <a href="${item.url}" target="_blank" 
-                                class="w-full flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold py-2 rounded-lg transition">
-                                <i data-lucide="file-text" class="w-4 h-4"></i> Open PDF
-                            </a>
-                        `}
-                    </div>
+                    <button onclick="playMedia('${encodeURIComponent(item.url)}', '${encodeURIComponent(item.title)}', '${item.type}')" 
+                        class="w-full flex items-center justify-center gap-1.5 ${isVideo ? 'bg-brand-600 hover:bg-brand-500 text-white' : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200'} text-xs font-semibold py-2 rounded-lg transition">
+                        <i data-lucide="${isVideo ? 'play-circle' : 'file-text'}" class="w-4 h-4"></i>
+                        <span>${isVideo ? 'Select Lecture' : 'Open PDF'}</span>
+                    </button>
                 `;
                 cardsGrid.appendChild(card);
             });
@@ -397,49 +366,54 @@
             lucide.createIcons();
         }
 
-        // Play Video Player Modal
-        window.playVideo = function(encodedUrl, encodedTitle) {
-            currentActiveUrl = decodeURIComponent(encodedUrl);
+        window.playMedia = function(encodedUrl, encodedTitle, type) {
+            const url = decodeURIComponent(encodedUrl);
             const title = decodeURIComponent(encodedTitle);
 
-            modalVideoTitle.textContent = title;
-            externalLinkBtn.href = currentActiveUrl;
-            videoModal.classList.remove('hidden');
-            playerStatus.textContent = "Video load ho rahi hai...";
+            currentActiveItem = { url, title, type };
+            currentPlayingTitle.textContent = title;
+            playerPlaceholder.classList.add('hidden');
+
+            const isHttps = url.startsWith('https://');
+            const cleanUrlForIntent = url.replace(/^https?:\/\//i, '');
+            const scheme = isHttps ? 'https' : 'http';
+
+            // INTENTS FOR 1DM & VLC
+            idmIntentBtn.href = `intent://${cleanUrlForIntent}#Intent;scheme=${scheme};package=idm.internet.download.manager;end;`;
+            vlcIntentBtn.href = `intent://${cleanUrlForIntent}#Intent;scheme=${scheme};package=org.videolan.vlc;type=video/*;end;`;
+
+            if (type === 'pdf') {
+                playerBadge.textContent = "PDF DOCUMENT";
+                mainVideoPlayer.classList.add('hidden');
+                pdfViewerFrame.classList.remove('hidden');
+                pdfViewerFrame.src = url;
+                playerStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> PDF Loaded`;
+                return;
+            }
+
+            playerBadge.textContent = "VIDEO STREAM";
+            pdfViewerFrame.classList.add('hidden');
+            mainVideoPlayer.classList.remove('hidden');
 
             if (hlsInstance) hlsInstance.destroy();
 
-            if (Hls.isSupported()) {
-                hlsInstance = new Hls();
-                hlsInstance.loadSource(currentActiveUrl);
-                hlsInstance.attachMedia(hlsPlayer);
-                
-                hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
-                    playerStatus.textContent = "Playing...";
-                    hlsPlayer.play();
-                });
+            playerStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Stream Loaded`;
 
-                hlsInstance.on(Hls.Events.ERROR, function(event, data) {
-                    if (data.fatal) {
-                        playerStatus.textContent = "❌ CORS / Stream Restriction. Neeche 'Open Direct' karke dekhein.";
-                    }
-                });
-            } else if (hlsPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-                hlsPlayer.src = currentActiveUrl;
-                hlsPlayer.play();
+            if (Hls.isSupported() && url.includes('.m3u8')) {
+                hlsInstance = new Hls();
+                hlsInstance.loadSource(url);
+                hlsInstance.attachMedia(mainVideoPlayer);
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => mainVideoPlayer.play());
+            } else {
+                mainVideoPlayer.src = url;
             }
         };
 
-        // Helper Functions
         copyUrlBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(currentActiveUrl);
-            alert("Video Link Copy ho gaya!");
-        });
-
-        closeModalBtn.addEventListener('click', () => {
-            videoModal.classList.add('hidden');
-            hlsPlayer.pause();
-            if (hlsInstance) hlsInstance.destroy();
+            if (currentActiveItem) {
+                navigator.clipboard.writeText(currentActiveItem.url);
+                alert("Fixed URL Copied:\n" + currentActiveItem.url);
+            }
         });
 
         function saveToLocalStorage() {
@@ -448,15 +422,6 @@
 
         searchInput.addEventListener('input', renderDashboardCards);
         categorySelect.addEventListener('change', renderDashboardCards);
-
-        document.querySelectorAll('.filter-type-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.filter-type-btn').forEach(b => b.classList.replace('bg-indigo-600', 'bg-slate-700'));
-                e.target.classList.replace('bg-slate-700', 'bg-indigo-600');
-                currentTypeFilter = e.target.dataset.type;
-                renderDashboardCards();
-            });
-        });
     </script>
 </body>
 </html>
