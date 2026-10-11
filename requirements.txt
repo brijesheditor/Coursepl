@@ -1,0 +1,6 @@
+pyrogram==2.0.106
+tgcrypto==1.2.5
+pyromod==3.1
+pycryptodome==3.20.0
+gunicorn 
+flask
