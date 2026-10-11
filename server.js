@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Front-end Interface with VLC integration
+// Front-end Interface with fixed VLC Android URI scheme
 app.get('/', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -96,12 +96,14 @@ app.get('/', (req, res) => {
                     }
                     videoList.innerHTML = '';
                     videos.forEach((item) => {
+                        // Fix for Android VLC scheme by removing https:// from the URI trigger
+                        const cleanUrlForVlc = item.url.replace(/^https?:\\/\\//, '');
                         const div = document.createElement('div');
                         div.className = "bg-slate-700/50 p-3 rounded-lg flex flex-col gap-2";
                         div.innerHTML = \`
                             <span class="text-sm font-medium text-slate-200">\${item.title}</span>
                             <div class="flex gap-2">
-                                <a href="vlc://\${item.url}" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-1.5 px-3 rounded text-center font-semibold">Play in VLC</a>
+                                <a href="vlc://\${cleanUrlForVlc}" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-1.5 px-3 rounded text-center font-semibold">Play in VLC</a>
                                 <button onclick="navigator.clipboard.writeText('\${item.url}'); alert('Link copied!');" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs py-1.5 px-3 rounded font-semibold">Copy Link</button>
                             </div>
                         \`;
